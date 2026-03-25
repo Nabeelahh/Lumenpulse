@@ -12,7 +12,7 @@ use notification_interface::{Notification, NotificationReceiverClient};
 use soroban_sdk::token::TokenClient;
 use soroban_sdk::xdr::ToXdr;
 use soroban_sdk::{contract, contractimpl, vec, Address, BytesN, Env, Symbol, Vec};
-use storage::{DataKey, ProjectData};
+use storage::{DataKey, ProjectData, ProtocolStats};
 
 #[contract]
 pub struct CrowdfundVaultContract;
