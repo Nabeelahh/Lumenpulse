@@ -38,10 +38,27 @@ export class NewsService {
     return saved;
   }
 
-  async findAll(): Promise<News[]> {
-    return this.newsRepository.find({
-      order: { publishedAt: 'DESC' },
-    });
+  async findAll(filters?: {
+    tag?: string;
+    category?: string;
+  }): Promise<News[]> {
+    const qb = this.newsRepository
+      .createQueryBuilder('news')
+      .orderBy('news.publishedAt', 'DESC');
+
+    if (filters?.tag) {
+      qb.andWhere(':tag = ANY(news.tags)', {
+        tag: filters.tag.toLowerCase(),
+      });
+    }
+
+    if (filters?.category) {
+      qb.andWhere('LOWER(news.category) = :category', {
+        category: filters.category.toLowerCase(),
+      });
+    }
+
+    return qb.getMany();
   }
 
   async findOne(id: string): Promise<News | null> {
@@ -147,6 +164,10 @@ export class NewsService {
         ? new Date(articleDto.publishedAt)
         : new Date(),
       sentimentScore: null, // Will be populated by sentiment service
+      tags: articleDto.keywords
+        ? articleDto.keywords.map((k) => k.toLowerCase())
+        : [],
+      category: articleDto.categories?.[0] ?? null,
     });
 
     return this.newsRepository.save(article);
