@@ -1,5 +1,6 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -11,6 +12,7 @@ import { TestExceptionController } from './test-exception.controller';
 import { SentimentModule } from './sentiment/sentiment.module';
 import { MetricsModule } from './metrics/metrics.module';
 import { AppCacheModule } from './cache/cache.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
 import { StellarModule } from './stellar/stellar.module';
 import { PriceModule } from './price/price.module';
 import { WebhookModule } from './webhook/webhook.module';
@@ -28,6 +30,14 @@ import { TestController } from './test/test.controller';
       load: [databaseConfig, stellarConfig],
     }),
 
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        ...configService.get('database'),
+        autoLoadEntities: true,
+      }),
+    }),
+
     ScheduleModule.forRoot(),
 
     ThrottlerModule.forRoot([
@@ -40,6 +50,7 @@ import { TestController } from './test/test.controller';
     AppCacheModule,
     MetricsModule,
     SentimentModule,
+    PortfolioModule,
     StellarModule,
     PriceModule,
     NotificationModule,
