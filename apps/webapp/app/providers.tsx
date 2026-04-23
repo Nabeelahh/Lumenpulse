@@ -13,6 +13,8 @@ import {
   getAddress as freighterGetAddress,
   requestAccess,
 } from "@stellar/freighter-api";
+import { OnboardingProvider as OnboardingP } from "@/lib/onboarding";
+import { ThemeProvider } from "@/components/theme-provider";
 
 interface StellarWalletState {
   publicKey: string | null;
@@ -33,6 +35,8 @@ const StellarWalletContext = createContext<StellarWalletState>({
 export function useStellarWallet() {
   return useContext(StellarWalletContext);
 }
+
+export { OnboardingP as OnboardingProvider };
 
 export function StellarProvider({ children }: { children: ReactNode }) {
   const [publicKey, setPublicKey] = useState<string | null>(null);
@@ -108,5 +112,30 @@ export function StellarProvider({ children }: { children: ReactNode }) {
     >
       {children}
     </StellarWalletContext.Provider>
+  );
+}
+
+/**
+ * Root Providers component that wraps the application with all necessary providers
+ * 
+ * This component combines:
+ * - ThemeProvider: Manages theme state, persistence, and system detection
+ * - StellarProvider: Manages Stellar wallet connection state
+ * 
+ * Requirements: 3.3, 3.1
+ */
+export function Providers({ children }: { children: ReactNode }) {
+  return (
+    <ThemeProvider
+      defaultTheme="system"
+      storageKey="lumenpulse-theme-preference"
+      enableTransitions={true}
+    >
+      <OnboardingP>
+        <StellarProvider>
+          {children}
+        </StellarProvider>
+      </OnboardingP>
+    </ThemeProvider>
   );
 }
