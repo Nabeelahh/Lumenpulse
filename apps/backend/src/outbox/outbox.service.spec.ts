@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { OutboxService } from './outbox.service';
 import { OutboxEvent, OutboxEventStatus } from './outbox-event.entity';
 
@@ -35,10 +34,14 @@ describe('OutboxService', () => {
   describe('publish()', () => {
     it('creates and saves a PENDING event', async () => {
       const built = { eventType: 'user.registered', payload: { userId: '1' } };
-      const saved = { id: 'uuid-1', ...built, status: OutboxEventStatus.PENDING };
+      const saved = {
+        id: 'uuid-1',
+        ...built,
+        status: OutboxEventStatus.PENDING,
+      };
 
-      (repo.create as jest.Mock).mockReturnValue(built);
-      (repo.save as jest.Mock).mockResolvedValue(saved);
+      repo.create.mockReturnValue(built);
+      repo.save.mockResolvedValue(saved);
 
       const result = await service.publish('user.registered', { userId: '1' });
 
@@ -79,7 +82,7 @@ describe('OutboxService', () => {
 
   describe('pollAndDispatch()', () => {
     it('does nothing when there are no pending events', async () => {
-      (repo.find as jest.Mock).mockResolvedValue([]);
+      repo.find.mockResolvedValue([]);
       await service.pollAndDispatch();
       expect(repo.save).not.toHaveBeenCalled();
     });
@@ -95,8 +98,8 @@ describe('OutboxService', () => {
         processedAt: null,
       };
 
-      (repo.find as jest.Mock).mockResolvedValue([event]);
-      (repo.save as jest.Mock).mockResolvedValue(event);
+      repo.find.mockResolvedValue([event]);
+      repo.save.mockResolvedValue(event);
 
       const handler = jest.fn().mockResolvedValue(undefined);
       service.registerHandler(handler);
@@ -121,8 +124,8 @@ describe('OutboxService', () => {
         processedAt: null,
       };
 
-      (repo.find as jest.Mock).mockResolvedValue([event]);
-      (repo.save as jest.Mock).mockResolvedValue(event);
+      repo.find.mockResolvedValue([event]);
+      repo.save.mockResolvedValue(event);
 
       const handler = jest.fn().mockRejectedValue(new Error('downstream down'));
       service.registerHandler(handler);
@@ -145,8 +148,8 @@ describe('OutboxService', () => {
         processedAt: null,
       };
 
-      (repo.find as jest.Mock).mockResolvedValue([event]);
-      (repo.save as jest.Mock).mockResolvedValue(event);
+      repo.find.mockResolvedValue([event]);
+      repo.save.mockResolvedValue(event);
 
       const handler = jest.fn().mockRejectedValue(new Error('still down'));
       service.registerHandler(handler);
@@ -168,8 +171,8 @@ describe('OutboxService', () => {
         processedAt: null,
       };
 
-      (repo.find as jest.Mock).mockResolvedValue([event]);
-      (repo.save as jest.Mock).mockResolvedValue(event);
+      repo.find.mockResolvedValue([event]);
+      repo.save.mockResolvedValue(event);
 
       const h1 = jest.fn().mockResolvedValue(undefined);
       const h2 = jest.fn().mockResolvedValue(undefined);

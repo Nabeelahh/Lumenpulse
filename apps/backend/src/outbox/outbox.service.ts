@@ -48,9 +48,7 @@ export class OutboxService {
     payload: Record<string, unknown>,
     manager?: EntityManager,
   ): Promise<OutboxEvent> {
-    const repo = manager
-      ? manager.getRepository(OutboxEvent)
-      : this.outboxRepo;
+    const repo = manager ? manager.getRepository(OutboxEvent) : this.outboxRepo;
 
     const event = repo.create({
       eventType,
