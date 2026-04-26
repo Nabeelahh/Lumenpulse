@@ -4,8 +4,8 @@ mod errors;
 mod events;
 mod storage;
 mod token;
+mod vault_interface;
 
-use crowdfund_vault::CrowdfundVaultContractClient;
 use errors::VestingError;
 use events::{AdminChangedEvent, UpgradedEvent};
 use soroban_sdk::{contract, contractimpl, Address, BytesN, Env};
@@ -13,6 +13,7 @@ use storage::{
     DataKey, MilestoneLink, MilestoneRequirement, VestingData, LEDGER_BUMP, LEDGER_THRESHOLD,
 };
 use token::transfer;
+use vault_interface::CrowdfundVaultClient;
 
 #[contract]
 pub struct VestingWalletContract;
@@ -22,7 +23,7 @@ impl VestingWalletContract {
     fn milestone_completed(env: &Env, vesting: &VestingData) -> bool {
         match &vesting.milestone_requirement {
             MilestoneRequirement::External(link) => {
-                let vault_client = CrowdfundVaultContractClient::new(env, &link.vault_contract);
+                let vault_client = CrowdfundVaultClient::new(env, &link.vault_contract);
                 vault_client.is_milestone_approved(&link.project_id, &link.milestone_id)
             }
             MilestoneRequirement::None => true,
@@ -166,7 +167,7 @@ impl VestingWalletContract {
         let contract_address = env.current_contract_address();
 
         if let MilestoneRequirement::External(link) = &milestone_requirement {
-            let vault_client = CrowdfundVaultContractClient::new(&env, &link.vault_contract);
+            let vault_client = CrowdfundVaultClient::new(&env, &link.vault_contract);
             let _ = vault_client.is_milestone_approved(&link.project_id, &link.milestone_id);
         }
 
