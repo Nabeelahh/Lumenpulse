@@ -15,6 +15,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { crowdfundApi, CrowdfundProject } from '../../../lib/crowdfund';
 import { computeFundingProgress, formatTokenAmount } from '../../../lib/stellar';
 import ContributionModal from '../../../components/ContributionModal';
+import VerificationPanel from '../../../components/VerificationPanel';
 import { usersApi } from '../../../lib/api';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -246,6 +247,9 @@ export default function ProjectDetailScreen() {
             held in an on-chain vault until milestones are approved.
           </Text>
         </View>
+
+        {/* Community verification */}
+        <VerificationPanel projectId={projectId} voterPublicKey={stellarPublicKey} />
       </ScrollView>
 
       {/* Contribute button — pinned to bottom */}
