@@ -242,8 +242,8 @@ describe('NewsService - sentiment methods', () => {
   const mockQueryProfilerService = {
     profile: jest
       .fn()
-      .mockImplementation(async (fn: () => Promise<void>): Promise<void> => {
-        await fn();
+      .mockImplementation(async <T>(fn: () => Promise<T>): Promise<T> => {
+        return await fn();
       }),
   };
 
