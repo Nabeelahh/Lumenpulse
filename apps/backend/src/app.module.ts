@@ -49,6 +49,7 @@ import { IdempotencyInterceptor } from './common/interceptors/idempotency.interc
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      ignoreEnvFile: true,
       load: [databaseConfig, stellarConfig],
     }),
 
