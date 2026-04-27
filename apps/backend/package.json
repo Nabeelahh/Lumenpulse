@@ -70,13 +70,9 @@
     "sharp": "^0.34.5",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
-<<<<<<< build
     "speakeasy": "^2.0.0",
-    "stellar-sdk": "^13.3.0"
-=======
     "stellar-sdk": "^13.3.0",
     "zod": "^3.25.76"
->>>>>>> main
   },
   "devDependencies": {
     "@eslint/eslintrc": "^0.1.0",
