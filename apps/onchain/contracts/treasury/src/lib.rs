@@ -104,7 +104,7 @@ impl TreasuryContract {
 
             // Transfer tokens from admin to treasury
             let token_client = token::TokenClient::new(&env, &token_addr);
-            token_client.transfer(&admin, &env.current_contract_address(), &amount);
+            token_client.transfer(&admin, env.current_contract_address(), &amount);
 
             events::publish_stream_created(&env, beneficiary, amount, start_time, duration);
 

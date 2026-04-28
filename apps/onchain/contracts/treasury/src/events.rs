@@ -1,17 +1,19 @@
-use soroban_sdk::{contracttype, Address, Env};
+use soroban_sdk::{contractevent, Address, Env};
 
-#[contracttype]
+#[contractevent]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StreamCreatedEvent {
+    #[topic]
     pub beneficiary: Address,
     pub amount: i128,
     pub start_time: u64,
     pub duration: u64,
 }
 
-#[contracttype]
+#[contractevent]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TokensClaimedEvent {
+    #[topic]
     pub beneficiary: Address,
     pub amount_claimed: i128,
     pub remaining: i128,
@@ -24,15 +26,13 @@ pub fn publish_stream_created(
     start_time: u64,
     duration: u64,
 ) {
-    env.events().publish(
-        ("Treasury", "stream_created", beneficiary.clone()),
-        StreamCreatedEvent {
-            beneficiary,
-            amount,
-            start_time,
-            duration,
-        },
-    );
+    StreamCreatedEvent {
+        beneficiary,
+        amount,
+        start_time,
+        duration,
+    }
+    .publish(env);
 }
 
 pub fn publish_tokens_claimed(
@@ -41,12 +41,10 @@ pub fn publish_tokens_claimed(
     amount_claimed: i128,
     remaining: i128,
 ) {
-    env.events().publish(
-        ("Treasury", "tokens_claimed", beneficiary.clone()),
-        TokensClaimedEvent {
-            beneficiary,
-            amount_claimed,
-            remaining,
-        },
-    );
+    TokensClaimedEvent {
+        beneficiary,
+        amount_claimed,
+        remaining,
+    }
+    .publish(env);
 }

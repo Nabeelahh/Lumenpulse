@@ -1,4 +1,3 @@
-#![cfg(test)]
 
 use super::*;
 use soroban_sdk::testutils::{Address as _, Ledger};
@@ -14,16 +13,16 @@ fn test_treasury_streaming() {
     let token_admin = Address::generate(&env);
 
     // Deploy token
-    let token_id = env.register_stellar_asset_contract(token_admin.clone());
-    let token_client = token::TokenClient::new(&env, &token_id);
-    let token_admin_client = token::StellarAssetClient::new(&env, &token_id);
+    let token_id = env.register_stellar_asset_contract_v2(token_admin.clone());
+    let token_client = token::TokenClient::new(&env, &token_id.address());
+    let token_admin_client = token::StellarAssetClient::new(&env, &token_id.address());
 
     // Deploy treasury
-    let treasury_id = env.register_contract(None, TreasuryContract);
+    let treasury_id = env.register(TreasuryContract, ());
     let treasury_client = TreasuryContractClient::new(&env, &treasury_id);
 
     // Initialize
-    treasury_client.initialize(&admin, &token_id);
+    treasury_client.initialize(&admin, &token_id.address());
 
     // Mint tokens to admin
     let amount = 1000i128;

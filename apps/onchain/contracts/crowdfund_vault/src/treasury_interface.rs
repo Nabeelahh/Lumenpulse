@@ -1,5 +1,6 @@
 use soroban_sdk::{contractclient, Address, Env};
 
+#[allow(dead_code)]
 #[contractclient(name = "TreasuryClient")]
 pub trait TreasuryTrait {
     fn allocate_budget(
