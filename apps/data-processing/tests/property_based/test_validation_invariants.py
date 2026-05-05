@@ -203,35 +203,33 @@ class TestNewsArticleValidationInvariants:
         result = validate_news_article(data_empty_published_at)
         assert result is None, "Article with empty published_at should be rejected"
     
-    @given(st.dictionaries(keys=st.text(min_size=1, max_size=20), values=st.text(), min_size=5, max_size=10))
-    def test_extra_fields_handling_invariant(self, data_dict):
+    @given(st.dictionaries(keys=st.text(min_size=1, max_size=20), values=st.text(), min_size=1, max_size=5))
+    def test_extra_fields_handling_invariant(self, extra_dict):
         """
         INVARIANT: Extra fields should be ignored, not cause rejection.
         
         The validation protocol should be robust to additional fields while
         maintaining core validation invariants.
         """
-        # Ensure we have the required fields
-        assume("id" in data_dict)
-        assume("title" in data_dict)
-        assume("content" in data_dict)
-        assume("published_at" in data_dict)
+        # Build dict with guaranteed required fields
+        data_dict = {
+            "id": "test-id",
+            "title": "Test Title",
+            "content": "Test Content",
+            "published_at": "2024-01-01T00:00:00Z",
+            "source": "Test Source",
+            "url": "https://example.com"
+        }
         
-        # Add some extra fields
-        data_dict["extra_field1"] = "extra_value1"
-        data_dict["extra_field2"] = "extra_value2"
-        data_dict["random_data"] = {"nested": "object"}
+        # Add generated extra fields
+        data_dict.update(extra_dict)
         
         result = validate_news_article(data_dict)
         
         # Should still be valid despite extra fields
-        if result is not None:
-            assert isinstance(result, NewsArticle), "Should return NewsArticle despite extra fields"
-            # Should have only the expected fields
-            assert hasattr(result, 'id')
-            assert hasattr(result, 'title')
-            assert hasattr(result, 'content')
-            assert hasattr(result, 'published_at')
+        assert result is not None, "Valid article with extra fields should be accepted"
+        assert isinstance(result, NewsArticle)
+        assert result.id == "test-id"
 
 
 class TestOnChainMetricValidationInvariants:

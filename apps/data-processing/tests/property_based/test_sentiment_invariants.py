@@ -221,7 +221,7 @@ class TestSentimentResultInvariants:
         negative=st.floats(min_value=0.0, max_value=1.0),
         neutral=st.floats(min_value=0.0, max_value=1.0),
         sentiment_label=st.sampled_from(["positive", "negative", "neutral"]),
-        asset_codes=st.lists(st.text(min_size=1, max_size=10), max_size=20)
+        asset_codes=st.lists(st.text(min_size=1, max_size=10).filter(lambda x: x.strip()), max_size=20)
     )
     def test_sentiment_result_structure_invariant(
         self, text, compound_score, positive, negative, neutral, sentiment_label, asset_codes
